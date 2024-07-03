@@ -11,6 +11,10 @@ import { Company } from './company/company.entity';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from './user/user.service';
+import { BankModule } from './bank/bank.module';
+import { ExpenseModule } from './expense/expense.module';
+import { Bank } from './bank/bank.entity';
+import { Expense } from './expense/expense.entity';
 //import { UserService } from './user/user.service';
 @Module({
   imports: [
@@ -25,10 +29,12 @@ import { UserService } from './user/user.service';
       username: process.env.PG_USER,
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DB,
-      entities: [User, Company],
+      entities: [User, Company, Bank, Expense],
       synchronize: true,
     }),
     AuthModule,
+    BankModule,
+    ExpenseModule,
   ],
   controllers: [AppController],
   providers: [UserService],

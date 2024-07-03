@@ -15,7 +15,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
-  async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
+  async signUp(signUpDto: SignUpDto): Promise<any> {
     const { name, email, password } = signUpDto;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -29,8 +29,13 @@ export class AuthService {
     await this.userRepository.save(user);
 
     const token = this.jwtService.sign({ id: user.id });
+    console.log(token);
 
-    return { token };
+    if(token){
+      return "success true";
+    }else{
+      return "success false";
+    }
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -45,6 +50,7 @@ export class AuthService {
 
   async login(user: Login) {
     const userEntity = await this.userService.findOne({ where: { email: user.email } });
+    console.log(userEntity);
     if (!userEntity) {
       return 'User not found';
     }
@@ -54,9 +60,7 @@ export class AuthService {
       return 'Invalid password';
     }
 
-    const payload = { id: userEntity.id, email: userEntity.email };
-    return {
-      access_token: this.jwtService.sign(payload, { secret: 'secretKey' }),
-    };
+    const token = this.jwtService.sign({ id: userEntity.id });
+    return token;
   }
 }
