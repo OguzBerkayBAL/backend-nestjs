@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-//import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { CompanyModule } from './company/company.module';
 import { User } from './user/user.entity';
 import { Company } from './company/company.entity';
-//import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from './user/user.service';
@@ -15,10 +13,16 @@ import { BankModule } from './bank/bank.module';
 import { ExpenseModule } from './expense/expense.module';
 import { Bank } from './bank/bank.entity';
 import { Expense } from './expense/expense.entity';
-//import { UserService } from './user/user.service';
+import { CacheService } from './cache/cache.service';
+import { CacheController } from './cache/cache.controller';
+import { RedisOptions } from './common/redis/redis-module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { MailModule } from './mail/mail.module';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot( { isGlobal: true } ),
+    CacheModule.registerAsync(RedisOptions),
+    MailModule,
     CompanyModule,
     UserModule,
     JwtModule,
@@ -35,8 +39,9 @@ import { Expense } from './expense/expense.entity';
     AuthModule,
     BankModule,
     ExpenseModule,
+    MailModule,
   ],
-  controllers: [AppController],
-  providers: [UserService],
+  controllers: [AppController, CacheController],
+  providers: [UserService, CacheService],
 })
 export class AppModule {}
