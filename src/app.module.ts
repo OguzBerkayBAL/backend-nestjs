@@ -18,6 +18,8 @@ import { CacheController } from './cache/cache.controller';
 import { RedisOptions } from './common/redis/redis-module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MailModule } from './mail/mail.module';
+import { TaskModule } from './task/task.module';
+import { Task } from './task/task.entity';
 @Module({
   imports: [
     ConfigModule.forRoot( { isGlobal: true } ),
@@ -32,13 +34,14 @@ import { MailModule } from './mail/mail.module';
       username: process.env.PG_USER,
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DB,
-      entities: [User, Company, Bank, Expense],
+      entities: [User, Company, Bank, Expense, Task],
       synchronize: true,
     }),
     AuthModule,
     BankModule,
     ExpenseModule,
     MailModule,
+    TaskModule,
   ],
   controllers: [AppController, CacheController],
   providers: [UserService, CacheService],

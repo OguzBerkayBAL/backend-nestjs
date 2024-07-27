@@ -3,6 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { UserService } from 'src/user/user.service';
+import { Task } from 'src/task/task.entity';
 
 @Injectable()
 export class MailService {
@@ -49,5 +50,17 @@ export class MailService {
 
     await this.userService.updatePassword(email, newPassword);
     await this.cacheManager.del(`password-reset:${email}`);
+  }
+
+  async sendTaskDueNotification(email: string, task: Task): Promise<void> {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Task Due Today',
+      template: 'taskDueNotification', 
+      context: {
+        description: task.description,
+        dueDate: task.dueDate.toDateString(),
+      },
+    });
   }
 }

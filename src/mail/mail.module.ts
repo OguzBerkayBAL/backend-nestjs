@@ -5,7 +5,6 @@ import { MailerModule, MailerOptions } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { ConfigService } from '@nestjs/config';
-import { UserService } from 'src/user/user.service';
 import { UserModule } from 'src/user/user.module';
 
 @Module({
@@ -38,5 +37,6 @@ import { UserModule } from 'src/user/user.module';
   ],
   providers: [MailService],
   controllers: [MailController],
+  exports: [MailService],
 })
 export class MailModule {}
