@@ -22,7 +22,6 @@ import { MailModule } from './mail/mail.module';
   imports: [
     ConfigModule.forRoot( { isGlobal: true } ),
     CacheModule.registerAsync(RedisOptions),
-    MailModule,
     CompanyModule,
     UserModule,
     JwtModule,

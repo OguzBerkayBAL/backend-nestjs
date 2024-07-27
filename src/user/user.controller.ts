@@ -8,6 +8,7 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/s
 import { query } from 'express';
 import { Paginate, PaginateQuery, Paginated } from 'nestjs-paginate';
 import { User } from './user.entity';
+import { Public } from 'src/public.decorator';
 //import { JwtAuthGuard } from 'src/jwt/jwt-auth.guard';
 
 @ApiTags('users')
@@ -16,6 +17,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   //@UseGuards(JwtAuthGuard)
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Tüm kullanicilari getir.'})
   @ApiResponse({
