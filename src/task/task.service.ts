@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
-import { Between, Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { User } from 'src/user/user.entity';
 import { CreateTask } from './create-task.dto';
 import { MailService } from 'src/mail/mail.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import * as cron from 'node-cron';
 
 @Injectable()
 export class TaskService {
@@ -22,10 +23,24 @@ export class TaskService {
         const { description, dueDate, assignedUserIds } = createTask;
         const task = new Task();
         task.description = description;
-        task.dueDate = dueDate;
-        task.assignedUsers = await this.userRepository.findByIds(assignedUserIds);
-        console.log('Task before saving:', task);
-        return this.taskRepository.save(task);
+        task.dueDate = new Date(dueDate);
+        task.assignedUsers = await this.userRepository.find({
+            where: {
+                id: In(assignedUserIds),
+            },
+        });
+        // return this.taskRepository.save(task);
+        const savedTask = await this.taskRepository.save(task);
+
+        const cronExpression = `${task.dueDate.getUTCMinutes()} ${task.dueDate.getUTCHours()} ${task.dueDate.getUTCDate()} ${task.dueDate.getUTCMonth() + 1} *`;
+        console.log(`Cron job scheduled for: ${cronExpression}`);
+        cron.schedule(cronExpression, async () => {
+            for (const user of task.assignedUsers) {
+                await this.mailService.sendTaskDueNotification(user.email, savedTask);
+            }
+        });
+
+        return savedTask;
     }
 
     async findTasksDueToday(): Promise<Task[]> {

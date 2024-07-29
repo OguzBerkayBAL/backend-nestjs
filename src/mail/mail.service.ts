@@ -28,7 +28,7 @@ export class MailService {
 
   async sendPasswordResetCode(email: string) {
     const code = Math.floor(100000 + Math.random() * 900000);
-    await this.cacheManager.set(email, code, 300);
+    await this.cacheManager.set(email, code, 900);
     await this.mailerService.sendMail({
       to: email,
       subject: 'Reset your password',
@@ -53,13 +53,14 @@ export class MailService {
   }
 
   async sendTaskDueNotification(email: string, task: Task): Promise<void> {
+    const dueDate = new Date(task.dueDate);
     await this.mailerService.sendMail({
       to: email,
       subject: 'Task Due Today',
       template: 'taskDueNotification', 
       context: {
         description: task.description,
-        dueDate: task.dueDate.toDateString(),
+        dueDate: dueDate.toDateString(),
       },
     });
   }
