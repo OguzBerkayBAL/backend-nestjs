@@ -4,12 +4,16 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { UserService } from 'src/user/user.service';
 import { Task } from 'src/task/task.entity';
+import { RabbitMQService } from 'src/rabbitmq/rabbitmq.service';
+import { Subject } from 'rxjs';
+import { NotificationDto } from 'src/dto/notification.dto';
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailerService: MailerService,
     private readonly userService: UserService,
+    private readonly rabbitMQService: RabbitMQService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -64,4 +68,27 @@ export class MailService {
       },
     });
   }
+
+  async sendMail(notification: NotificationDto) {
+    const { email, message } = notification;
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'New Notification',
+      text: message,
+  });
+
+  console.log(`Notification sent to ${email}`);
+  }
+
+  
+
+  // async sendNotification() {
+  //   try {
+  //     const response = await this.rabbitMQService.sendMessage('notifications',[1,2,3]);
+  //     console.log('Response from RabbitMQ:', response);
+  //   } catch (error) {
+  //     console.error('Error sending message to RabbitMQ:', error);
+  //   }
+  // }
 }

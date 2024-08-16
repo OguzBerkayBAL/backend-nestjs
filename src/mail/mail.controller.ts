@@ -23,4 +23,9 @@ export class MailController {
     await this.mailService.resetPassword(email, code, newPassword);
     return 'Password reset successfully';
   }
+  // @Public()
+  // @Get('send-notification')
+  // async sendNotification() {
+  //   return this.mailService.sendNotification();
+  // }
 }

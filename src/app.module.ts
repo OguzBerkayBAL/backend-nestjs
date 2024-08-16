@@ -20,6 +20,11 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { MailModule } from './mail/mail.module';
 import { TaskModule } from './task/task.module';
 import { Task } from './task/task.entity';
+import { RabbitMQModule } from './rabbitmq/rabbitmq.module';
+import { RabbitMQService } from './rabbitmq/rabbitmq.service';
+import { AppService } from './app.service';
+import { NotificationConsumer } from './rabbitmq/notificationConsumer.service';
+import { RabbitMQController } from './rabbitmq/rabbitmq.controller';
 @Module({
   imports: [
     ConfigModule.forRoot( { isGlobal: true } ),
@@ -42,8 +47,9 @@ import { Task } from './task/task.entity';
     ExpenseModule,
     MailModule,
     TaskModule,
+    RabbitMQModule,
   ],
-  controllers: [AppController, CacheController],
-  providers: [UserService, CacheService],
+  controllers: [AppController, CacheController, RabbitMQController],
+  providers: [AppService, UserService, CacheService, RabbitMQService, NotificationConsumer],
 })
 export class AppModule {}
